@@ -63,8 +63,7 @@ async function callIyh(prompt) {
   const res = await fetch(CONFIG.IYH_URL, {
     method:  'POST',
     headers: {
-      'Content-Type':  'application/json',
-      'Authorization': `Bearer ${CONFIG.IYH_API_KEY}`
+      'Content-Type':  'application/json'
     },
     body: JSON.stringify({
       model: CONFIG.IYH_MODEL,

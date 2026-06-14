@@ -1,14 +1,14 @@
 // config.js
-// Konfigurasi AI Provider — menggunakan IYH App API
+// Konfigurasi AI Provider — menggunakan IYH App API via Vercel Serverless Proxy
 
 const CONFIG = {
   // Provider: 'iyh'
   AI_PROVIDER: 'iyh',
 
   // IYH App settings
-  IYH_API_KEY: 'iyh_5PZ_J2iy9lFz8t9Y3F1xKxEb5UflEY6f',
-  // Menggunakan proxy untuk menghindari error CORS (Failed to fetch) di browser
-  IYH_URL:     'https://corsproxy.io/?https://v1.iyhapi.app/chat/completions',
+  // API Key sekarang disimpan di Vercel Environment Variable (aman, tidak terekspos di browser)
+  // URL mengarah ke serverless function /api/ai — tidak perlu CORS proxy lagi
+  IYH_URL:     '/api/ai',
   IYH_MODEL:   'gemini-3-flash', // Model yang diaktifkan di akun IYH App
 
   // Bahasa respons
