@@ -769,7 +769,7 @@ async function requestAlertNarration() {
     const narration = await narrateAllAlerts(currentAnomalies);
     output.innerHTML = narration
       .split('\n').filter(l => l.trim())
-      .map(l => `<div class="narration-line">${l}</div>`)
+      .map(l => `<p class="narration-paragraph" style="margin-bottom: 12px; line-height: 1.6; color: #e8ecf4; font-size: 14px;">${l}</p>`)
       .join('');
   } catch (err) {
     output.innerHTML = `<p style="color:#ef4444">Error: ${err.message}</p>`;

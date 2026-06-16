@@ -46,7 +46,7 @@ Kategori terburuk (margin): ${stats.worstCategory.category} (${stats.worstCatego
 ATURAN KETAT:
 1. Jawablah pertanyaan di bawah ini dengan singkat, praktis, dan langsung ke poin menggunakan Bahasa Indonesia.
 2. Kamu HANYA boleh menjawab jika pertanyaan berkaitan dengan data penjualan Superstore, dashboard analitik ini, sales, profit, kategori, wilayah, anomali, atau performa bisnis dari konteks di atas.
-3. JIKA pertanyaan di luar topik data Superstore/dashboard ini (misalnya pemrograman umum, resep makanan, pengetahuan umum non-data Superstore, percakapan santai, dll), kamu HARUS menjawab dengan persis kalimat ini: "Maaf saya tidak diprogram untuk menjawab itu" dan jangan berikan penjelasan tambahan apapun.
+3. JIKA pertanyaan di luar topik data Superstore/dashboard ini (misalnya pemrograman umum, resep makanan, pengetahuan umum non-data Superstore, percakapan santai, dll), kamu HARUS menjawab dengan persis kalimat ini: "Maaf, saya hanya AI untuk membantu anda menemukan insight pada dashboard ini, jika anda menanyakan hal dilkuar itu, saya tidak bisa menjawabnya. Anda bisa mulai mencari insight tentang dashboard ini dengan menuliskan "Berapa revenue terbesar yang diperoleh?" dan tuliskan di kolom pertanyaan dibawah." dan jangan berikan penjelasan tambahan apapun.
 4. Jawaban harus SPESIFIK terhadap filter yang sedang aktif. Jika ada filter aktif, sebutkan konteks filter tersebut dalam jawabanmu.
 
 Pertanyaan: ${question}`;
@@ -55,7 +55,15 @@ Pertanyaan: ${question}`;
 // ── Panggil LLM dan dapatkan insight ─────────────────────────
 async function getInsight(stats, focusQuestion = '', filterContext = '') {
   const prompt = buildPrompt(stats, focusQuestion, filterContext);
-  return await callIyh(prompt);
+  const response = await callIyh(prompt);
+  
+  // Jika respons mengindikasikan di luar konteks, pastikan kita mengembalikan kalimat yang tepat sesuai permintaan user
+  const offTopicPattern = /(tidak diprogram|hanya AI untuk membantu|tidak bisa menjawabnya|Maaf, saya hanya AI|dilkuar itu)/i;
+  if (offTopicPattern.test(response)) {
+    return `Maaf, saya hanya AI untuk membantu anda menemukan insight pada dashboard ini, jika anda menanyakan hal dilkuar itu, saya tidak bisa menjawabnya. Anda bisa mulai mencari insight tentang dashboard ini dengan menuliskan "Berapa revenue terbesar yang diperoleh?" dan tuliskan di kolom pertanyaan dibawah.`;
+  }
+  
+  return response;
 }
 
 // ── Implementasi IYH App ─────────────────────────────────────────
@@ -73,7 +81,7 @@ async function callIyh(prompt) {
           content: 'Kamu adalah analis bisnis yang memberi insight singkat, ' +
                    'praktis, dan langsung ke poin. Gunakan Bahasa Indonesia.\n' +
                    'PENTING: Kamu HANYA boleh menjawab pertanyaan seputar data Superstore, dashboard analitik ini, sales, profit, kategori, wilayah, atau performa bisnis terkait.\n' +
-                   'Jika pertanyaan di luar topik data Superstore/dashboard ini, kamu WAJIB menjawab hanya dengan kalimat: "Maaf saya tidak diprogram untuk menjawab itu" tanpa penjelasan lainnya.'
+                   'Jika pertanyaan di luar topik data Superstore/dashboard ini, kamu WAJIB menjawab hanya dengan kalimat: "Maaf, saya hanya AI untuk membantu anda menemukan insight pada dashboard ini, jika anda menanyakan hal dilkuar itu, saya tidak bisa menjawabnya. Anda bisa mulai mencari insight tentang dashboard ini dengan menuliskan \\"Berapa revenue terbesar yang diperoleh?\\" dan tuliskan di kolom pertanyaan dibawah." tanpa penjelasan lainnya.'
         },
         {
           role:    'user',
@@ -158,14 +166,14 @@ async function narrateAllAlerts(anomalies) {
     return `${i+1}. [INFO] IQR outlier di ${a.subcat} (${a.count} transaksi)`;
   }).join('\n');
 
-  const prompt = `Kamu adalah analis data bisnis yang memberi alert singkat dan actionable.
+  const prompt = `Kamu adalah analis data bisnis yang memberi penjelasan anomali secara terpadu.
 Berikut adalah daftar anomali yang terdeteksi di data penjualan Superstore:
 
 ${itemLines}
 
-Untuk setiap anomali, tulis satu kalimat alert dalam Bahasa Indonesia.
-Format untuk setiap baris: "• [nama/bulan]: [fakta mengejutkan] — [rekomendasi 1 kata kerja]"
-Urutkan dari yang paling kritis. Jangan preamble, langsung list.`;
+Tuliskan sebuah narasi analisis dalam bentuk satu atau dua paragraf utuh dalam Bahasa Indonesia yang merangkum anomali-anomali di atas secara kohesif.
+Fokus pada poin paling kritis, hubungkan informasi tersebut secara logis, dan sertakan rekomendasi tindakan konkret.
+PENTING: Jangan gunakan format daftar, poin-poin (bullet-points seperti •), nomor, atau simbol list lainnya. Tulis dalam bentuk paragraf teks biasa yang mengalir indah. Jangan berikan kalimat pembuka (preamble) atau penutup, langsung mulai dengan narasinya.`;
 
   return await callIyh(prompt);
 }
