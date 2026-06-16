@@ -60,7 +60,7 @@ async function getInsight(stats, focusQuestion = '', filterContext = '') {
   // Jika respons mengindikasikan di luar konteks, pastikan kita mengembalikan kalimat yang tepat sesuai permintaan user
   const offTopicPattern = /(tidak diprogram|hanya AI untuk membantu|tidak bisa menjawabnya|Maaf, saya hanya AI|dilkuar itu)/i;
   if (offTopicPattern.test(response)) {
-    return `Maaf, saya hanya AI untuk membantu anda menemukan insight pada dashboard ini, jika anda menanyakan hal dilkuar itu, saya tidak bisa menjawabnya. Anda bisa mulai mencari insight tentang dashboard ini dengan menuliskan "Berapa revenue terbesar yang diperoleh?" dan tuliskan di kolom pertanyaan dibawah.`;
+    return `Maaf, saya hanya AI untuk membantu anda menemukan insight pada dashboard ini, jika anda menanyakan hal dilkuar itu, saya tidak bisa menjawabnya. Anda bisa mulai mencari insight tentang dashboard ini dengan menuliskan <b>"Berapa revenue terbesar yang diperoleh?"</b> dan tuliskan di kolom pertanyaan dibawah.`;
   }
   
   return response;
